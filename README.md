@@ -1,13 +1,11 @@
 📚 Bookemp – Otthoni könyvtárrendező mobilalkalmazás
+
 🔹 Bookemp egy otthoni könyvrendszerező mobilalkalmazás, amely lehetővé teszi a felhasználók számára saját könyvtáraik létrehozását, a könyvek adatainak felvételét és listázását, valamint exportálását CSV/Excel formátumban. A projekt két mérföldkőből áll, a fotós beolvasás funkció később, opcionálisan kerül integrálásra.
 ________________________________________
 1. Mérföldkő: Alapfunkciók, Regisztráció, Főképernyő
 Funkciók:
 •	Bejelentkezés/Regisztráció: email + jelszó alapon.
 •	Könyvtárak kezelése: a felhasználó új könyvtárakat hozhat létre (pl. "Hálószoba", "Nappali").
-•	Könyvhozzáadás: egy adott könyvtáron belül kézzel vihetők fel könyvadatok.
-•	Adatok: szerző, cím, kiadás éve, kiadó, beszerzési ár, azonosító, cimkék.
-•	Lista nézet: RecyclerView-al listázva a könyvtáron belüli könyvek.
 •	Látványos UI: letisztult megjelenés + 1 animáció (pl. gombreakció vagy átmenet).
 Technológia:
 •	Android Studio
@@ -17,6 +15,9 @@ Technológia:
 ________________________________________
 2. Mérföldkő: Adatkezelés, Exportálás, Címkézés
 Bővített funkciók:
+•	Könyvhozzáadás: egy adott könyvtáron belül kézzel vihetők fel könyvadatok.
+•	Adatok: szerző, cím, kiadás éve, kiadó, beszerzési ár, azonosító, cimkék.
+•	Lista nézet: RecyclerView-al listázva a könyvtáron belüli könyvek.
 •	Címkék kezelése: minden könyvhöz szabadon hozzáadható címkék (pl. sci-fi, romantikus).
 •	Exportálás: Excel vagy CSV formátumban, képek nélkül.
 •	További animációk: pl. könyvtár nyitás, lista megjelenés, sikeres mentés visszajelzés.
