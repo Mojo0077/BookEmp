@@ -1,5 +1,6 @@
 package com.example.bookemp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,15 +11,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bookemp.R
+import com.example.bookemp.models.Library
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.example.bookemp.models.Library
 
 @Composable
 fun LibraryListScreen(
@@ -27,18 +30,31 @@ fun LibraryListScreen(
     val db = FirebaseFirestore.getInstance()
     val libraries = remember { mutableStateListOf<Library>() }
     val customFont = FontFamily(Font(R.font.cat_childs))
+    val context = LocalContext.current
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+    var registration: ListenerRegistration? = null
 
-    // Valós idejű lekérés
-    DisposableEffect(Unit) {
-        val registration: ListenerRegistration = db.collection("libraries")
-            .addSnapshotListener { snapshots, _ ->
-                libraries.clear()
-                snapshots?.forEach { doc ->
-                    val library = doc.toObject(Library::class.java).copy(id = doc.id)
-                    libraries.add(library)
+    DisposableEffect(userId) {
+        if (userId != null) {
+            registration = db.collection("users")
+                .document(userId)
+                .collection("libraries")
+                .addSnapshotListener { snapshots, error ->
+                    libraries.clear()
+                    if (error != null) {
+                        Toast.makeText(context, "Hiba: ${error.message}", Toast.LENGTH_SHORT).show()
+                        return@addSnapshotListener
+                    }
+
+                    snapshots?.forEach { doc ->
+                        val library = doc.toObject(Library::class.java).copy(id = doc.id)
+                        libraries.add(library)
+                    }
                 }
-            }
-        onDispose { registration.remove() }
+        }
+        onDispose {
+            registration?.remove()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

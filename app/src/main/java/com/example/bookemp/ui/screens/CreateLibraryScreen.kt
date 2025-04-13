@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.bookemp.R
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
 @Composable
@@ -32,6 +33,7 @@ fun CreateLibraryScreen(
     val context = LocalContext.current
     val customFont = FontFamily(Font(R.font.cat_childs))
     var libraryName by remember { mutableStateOf("") }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -87,19 +89,30 @@ fun CreateLibraryScreen(
                 onClick = {
                     if (libraryName.isNotBlank()) {
                         val db = FirebaseFirestore.getInstance()
-                        val libraryData = hashMapOf(
-                            "name" to libraryName,
-                            "createdAt" to Date()
-                        )
-                        db.collection("libraries")
-                            .add(libraryData)
-                            .addOnSuccessListener {
-                                Toast.makeText(context, "Könyvtár létrehozva!", Toast.LENGTH_SHORT).show()
-                                onLibraryCreated()
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(context, "Hiba: ${it.message}", Toast.LENGTH_SHORT).show()
-                            }
+                        val auth = FirebaseAuth.getInstance()
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+                        if (userId != null) {
+                            val libraryData = hashMapOf(
+                                "name" to libraryName,
+                                "createdAt" to Date(),
+                                "userId" to FirebaseAuth.getInstance().currentUser?.uid
+                            )
+
+                            db.collection("users")
+                                .document(userId)
+                                .collection("libraries")
+                                .add(libraryData)
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Könyvtár létrehozva!", Toast.LENGTH_SHORT).show()
+                                    onLibraryCreated()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Hiba: ${it.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        } else {
+                            Toast.makeText(context, "Nincs bejelentkezett felhasználó!", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(context, "Írj be egy könyvtárnevet!", Toast.LENGTH_SHORT).show()
                     }
@@ -110,7 +123,6 @@ fun CreateLibraryScreen(
             ) {
                 Text("Létrehozás", fontFamily = customFont, color = Color(0xFFDFB148), fontSize = 22.sp)
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             TextButton(onClick = onCancel) {
